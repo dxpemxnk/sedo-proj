@@ -20,7 +20,7 @@ const validationSchema = Yup.object({
   email: Yup.string().email("Некорректный email").required("Email обязателен"),
   password: Yup.string()
     .required("Пароль обязателен")
-    .min(6, "Пароль должен содержать минимум 6 символов"),
+    .min(1, "Пароль должен содержать минимум 1 символ"),
   role: Yup.string().required("Роль обязательна"),
   phone: Yup.string()
     .required("Телефон обязателен")
