@@ -9,16 +9,16 @@ module.exports = {
         {
           name: "John Doe",
           email: "john@mail.ru",
-          password: bcrypt.hashSync("1", saltRounds),
+          password: bcrypt.hashSync("123456", saltRounds),
           role: "Admin",
-          phone: 213456,
+          phone: "1234567890",
         },
         {
           name: "Joe Peach",
           email: "joe@mail.ru",
-          password: bcrypt.hashSync("1", saltRounds),
+          password: bcrypt.hashSync("123456", saltRounds),
           role: "Manager",
-          phone: 734589,
+          phone: "9876543210",
         },
       ],
       {}

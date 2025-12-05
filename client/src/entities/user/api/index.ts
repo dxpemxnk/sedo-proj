@@ -14,7 +14,7 @@ export class UserService {
     email: string,
     password: string,
     role: string,
-    phone: number
+    phone: string
   ): Promise<{ accessToken: string; user: UserWithoutPasswordType }> {
     const response = await axiosInstance.post(API_ROUTES.REG_PATH, {
       name,

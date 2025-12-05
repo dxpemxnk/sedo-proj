@@ -62,7 +62,7 @@ export const registration = createAsyncThunk<
     email: string;
     password: string;
     role: string;
-    phone: number;
+    phone: string;
   },
   { rejectValue: RejectValue }
 >(

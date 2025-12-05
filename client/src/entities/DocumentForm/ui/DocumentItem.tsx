@@ -14,11 +14,14 @@ import {
   Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
+import { DocumentForm } from "@/widgets/DocForm/ui/DocumentForm";
 
 export function DocumentItem({ doc }: { doc: DocumentType }): JSX.Element {
   const [deleteDoc] = useDeleteDocumentMutation();
   const [openDialog, setOpenDialog] = useState(false);
+  const [openEditForm, setOpenEditForm] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -51,13 +54,23 @@ export function DocumentItem({ doc }: { doc: DocumentType }): JSX.Element {
             <Typography variant="h6" component="h2" gutterBottom>
               {doc.name}
             </Typography>
-            <IconButton
-              color="error"
-              onClick={() => setOpenDialog(true)}
-              size="small"
-            >
-              <DeleteIcon />
-            </IconButton>
+            <Box>
+              <IconButton
+                color="primary"
+                onClick={() => setOpenEditForm(true)}
+                size="small"
+                sx={{ mr: 1 }}
+              >
+                <EditIcon />
+              </IconButton>
+              <IconButton
+                color="error"
+                onClick={() => setOpenDialog(true)}
+                size="small"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
           </Box>
 
           <Typography color="text.secondary" paragraph>
@@ -111,6 +124,20 @@ export function DocumentItem({ doc }: { doc: DocumentType }): JSX.Element {
             Удалить
           </Button>
         </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openEditForm}
+        onClose={() => setOpenEditForm(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogContent>
+          <DocumentForm
+            document={doc}
+            onClose={() => setOpenEditForm(false)}
+          />
+        </DialogContent>
       </Dialog>
     </>
   );

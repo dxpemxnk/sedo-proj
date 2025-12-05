@@ -3,8 +3,19 @@ const DocService = require("../services/doc.service");
 class DocController {
   static getAllDocsController = async (req, res) => {
     try {
-      const docs = await DocService.getAllDoc();
-      res.status(200).json({ message: "success", docs: docs }); // Даем клиенту данные с полем docs
+      // Получаем параметры фильтрации из query string
+      const filters = {
+        search: req.query.search || "",
+        category_id: req.query.category_id || null,
+        signed: req.query.signed !== undefined ? req.query.signed : null,
+        date_start: req.query.date_start || null,
+        date_end: req.query.date_end || null,
+        sortBy: req.query.sortBy || "date_start",
+        sortOrder: req.query.sortOrder || "DESC",
+      };
+
+      const docs = await DocService.getAllDoc(filters);
+      res.status(200).json({ message: "success", docs: docs });
     } catch (error) {
       console.error("Ошибка на сервере:", error);
       res
