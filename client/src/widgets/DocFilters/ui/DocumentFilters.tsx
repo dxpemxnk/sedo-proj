@@ -20,28 +20,58 @@ import { DocumentFilters } from "@/entities/DocumentForm/api/DocApi";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 
+/**
+ * Пропсы компонента фильтров документов
+ */
 interface DocumentFiltersProps {
+  /** Текущие значения фильтров */
   filters: DocumentFilters;
+  /** Callback функция, вызываемая при изменении фильтров */
   onFiltersChange: (filters: DocumentFilters) => void;
 }
 
+/**
+ * Компонент фильтров и поиска документов
+ * 
+ * Предоставляет интерфейс для:
+ * - Поиска документов по названию и описанию
+ * - Фильтрации по категории, статусу подписи и датам
+ * - Сортировки документов по различным полям
+ * 
+ * Все изменения фильтров немедленно передаются родительскому компоненту
+ * через callback onFiltersChange для обновления списка документов
+ */
 export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
   filters,
   onFiltersChange,
 }) => {
+  // Загружаем список категорий для фильтра
   const { data: categories } = useGetCategoriesQuery();
+  
+  // Локальное состояние фильтров для управления формой
+  // Используется для синхронизации с внешним состоянием и предотвращения лишних ре-рендеров
   const [localFilters, setLocalFilters] = useState<DocumentFilters>(filters);
 
+  // Синхронизируем локальное состояние с внешним при изменении пропсов
+  // Это необходимо, если фильтры могут быть изменены извне (например, при сбросе)
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
 
+  /**
+   * Обработчик изменения поискового запроса
+   * Обновляет фильтр поиска и немедленно применяет изменения
+   */
   const handleSearchChange = (value: string) => {
     const newFilters = { ...localFilters, search: value };
     setLocalFilters(newFilters);
     onFiltersChange(newFilters);
   };
 
+  /**
+   * Обработчик изменения фильтра категории
+   * Преобразует пустую строку в null для сброса фильтра
+   */
   const handleCategoryChange = (value: number | "") => {
     const newFilters = {
       ...localFilters,
@@ -51,6 +81,10 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
     onFiltersChange(newFilters);
   };
 
+  /**
+   * Обработчик изменения фильтра статуса подписи
+   * Преобразует строковое значение "true"/"false" в boolean или null
+   */
   const handleSignedChange = (value: string) => {
     const newFilters = {
       ...localFilters,
@@ -60,6 +94,10 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
     onFiltersChange(newFilters);
   };
 
+  /**
+   * Обработчик изменения даты начала
+   * Преобразует Date объект в строку формата YYYY-MM-DD для отправки на сервер
+   */
   const handleDateStartChange = (date: Date | null) => {
     const newFilters = {
       ...localFilters,
@@ -69,6 +107,10 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
     onFiltersChange(newFilters);
   };
 
+  /**
+   * Обработчик изменения даты окончания
+   * Преобразует Date объект в строку формата YYYY-MM-DD для отправки на сервер
+   */
   const handleDateEndChange = (date: Date | null) => {
     const newFilters = {
       ...localFilters,
@@ -78,6 +120,10 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
     onFiltersChange(newFilters);
   };
 
+  /**
+   * Обработчик изменения поля сортировки
+   * Определяет, по какому полю будут сортироваться документы
+   */
   const handleSortByChange = (value: string) => {
     const newFilters = {
       ...localFilters,
@@ -87,6 +133,10 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
     onFiltersChange(newFilters);
   };
 
+  /**
+   * Обработчик изменения направления сортировки
+   * Определяет порядок сортировки: по возрастанию (ASC) или убыванию (DESC)
+   */
   const handleSortOrderChange = (value: string) => {
     const newFilters = {
       ...localFilters,
@@ -96,6 +146,15 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
     onFiltersChange(newFilters);
   };
 
+  /**
+   * Обработчик сброса всех фильтров
+   * Возвращает фильтры к значениям по умолчанию:
+   * - Пустой поиск
+   * - Все категории
+   * - Все статусы подписи
+   * - Без фильтров по датам
+   * - Сортировка по дате начала по убыванию
+   */
   const handleClearFilters = () => {
     const clearedFilters: DocumentFilters = {
       search: "",
@@ -111,8 +170,11 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
   };
 
   return (
+    // LocalizationProvider обеспечивает локализацию компонентов выбора даты
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
+      {/* Контейнер для всех фильтров с тенью и отступами */}
       <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+        {/* Заголовок секции с кнопкой очистки фильтров */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
           <Typography variant="h6" component="h2">
             Поиск и фильтры
@@ -127,6 +189,9 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
           </Button>
         </Box>
 
+        {/* Сетка для размещения полей фильтров
+            - На мобильных устройствах (xs): одна колонка
+            - На планшетах и десктопах (md): 12 колонок для гибкого размещения */}
         <Box
           sx={{
             display: "grid",
@@ -137,7 +202,7 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
             gap: 2,
           }}
         >
-          {/* Поиск */}
+          {/* Поле поиска: занимает 6 колонок из 12 на десктопе, всю ширину на мобильных */}
           <Box sx={{ gridColumn: { xs: "1", md: "span 6" } }}>
             <TextField
               fullWidth
@@ -151,7 +216,7 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
             />
           </Box>
 
-          {/* Категория */}
+          {/* Фильтр по категории: занимает 3 колонки на десктопе */}
           <Box sx={{ gridColumn: { xs: "1", md: "span 3" } }}>
             <FormControl fullWidth>
               <InputLabel id="category-filter-label">Категория</InputLabel>
@@ -162,6 +227,7 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
                 label="Категория"
               >
                 <MenuItem value="">Все категории</MenuItem>
+                {/* Динамически генерируем пункты меню из загруженных категорий */}
                 {categories?.map((category: CategoryType) => (
                   <MenuItem key={category.id} value={category.id}>
                     {category.name}
@@ -171,7 +237,7 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
             </FormControl>
           </Box>
 
-          {/* Статус подписи */}
+          {/* Фильтр по статусу подписи: занимает 3 колонки на десктопе */}
           <Box sx={{ gridColumn: { xs: "1", md: "span 3" } }}>
             <FormControl fullWidth>
               <InputLabel id="signed-filter-label">Статус подписи</InputLabel>
@@ -192,7 +258,8 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
             </FormControl>
           </Box>
 
-          {/* Дата начала */}
+          {/* Фильтр по дате начала: занимает 4 колонки на десктопе
+              Позволяет выбрать минимальную дату начала для фильтрации */}
           <Box sx={{ gridColumn: { xs: "1", md: "span 4" } }}>
             <DatePicker
               label="Дата начала (от)"
@@ -210,7 +277,8 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
             />
           </Box>
 
-          {/* Дата окончания */}
+          {/* Фильтр по дате окончания: занимает 4 колонки на десктопе
+              Позволяет выбрать максимальную дату окончания для фильтрации */}
           <Box sx={{ gridColumn: { xs: "1", md: "span 4" } }}>
             <DatePicker
               label="Дата окончания (до)"
@@ -226,7 +294,7 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
             />
           </Box>
 
-          {/* Сортировка */}
+          {/* Выбор поля для сортировки: занимает 2 колонки на десктопе */}
           <Box sx={{ gridColumn: { xs: "1", md: "span 2" } }}>
             <FormControl fullWidth>
               <InputLabel id="sort-by-label">Сортировать по</InputLabel>
@@ -243,6 +311,7 @@ export const DocumentFiltersComponent: React.FC<DocumentFiltersProps> = ({
             </FormControl>
           </Box>
 
+          {/* Выбор направления сортировки: занимает 2 колонки на десктопе */}
           <Box sx={{ gridColumn: { xs: "1", md: "span 2" } }}>
             <FormControl fullWidth>
               <InputLabel id="sort-order-label">Порядок</InputLabel>
