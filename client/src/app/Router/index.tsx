@@ -10,7 +10,7 @@ import { Layout } from "./Layout/Layout";
 
 // Импорт всех страничных компонентов из индексного файла pages
 // Каждая страница - это отдельный экран приложения
-import { AuthPage, DocPage,CrePage,  RegPage, NotFound } from "@/pages";
+import { AuthPage, DocPage,CrePage,  RegPage, NotFound, HomePage } from "@/pages";
 
 // ЗАКОММЕНТИРОВАННЫЙ ИМПОРТ - возможно, страница редактирования документа (пока не используется)
 // import { CurrentPage } from "@/pages/CurrentPage";
@@ -41,11 +41,10 @@ export const router = createBrowserRouter([
         // ДОЧЕРНИЕ МАРШРУТЫ - вложенные внутри Layout
         // Содержимое этих страниц будет рендериться внутри <Outlet /> в Layout компоненте
         children:[
-            // ЗАКОММЕНТИРОВАННЫЙ МАРШРУТ - возможно, главная страница (пока не реализована)
-            // {
-            //     path: CLIENT_ROUTES.HOME,
-            //     element: <HomePage />,
-            // },
+            {
+                path: CLIENT_ROUTES.HOME,
+                element: <HomePage />,
+            },
             
             {
                 // Маршрут для страницы авторизации (/auth)
