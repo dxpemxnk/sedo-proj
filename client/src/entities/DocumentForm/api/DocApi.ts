@@ -21,18 +21,20 @@ export const docApi = createApi({
   endpoints: (build) => ({
     // Получение списка документов с фильтрацией
     getDocuments: build.query<DocList, DocumentFilters | void>({
-      query: (filters = {}) => {
+      query: (filters) => {
         const params = new URLSearchParams();
         
-        if (filters.search) params.append("search", filters.search);
-        if (filters.category_id) params.append("category_id", String(filters.category_id));
-        if (filters.signed !== null && filters.signed !== undefined && filters.signed !== "") {
-          params.append("signed", String(filters.signed));
+        if (filters) {
+          if (filters.search) params.append("search", filters.search);
+          if (filters.category_id) params.append("category_id", String(filters.category_id));
+          if (filters.signed !== null && filters.signed !== undefined && filters.signed !== "") {
+            params.append("signed", String(filters.signed));
+          }
+          if (filters.date_start) params.append("date_start", filters.date_start);
+          if (filters.date_end) params.append("date_end", filters.date_end);
+          if (filters.sortBy) params.append("sortBy", filters.sortBy);
+          if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
         }
-        if (filters.date_start) params.append("date_start", filters.date_start);
-        if (filters.date_end) params.append("date_end", filters.date_end);
-        if (filters.sortBy) params.append("sortBy", filters.sortBy);
-        if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
 
         const queryString = params.toString();
         return {
